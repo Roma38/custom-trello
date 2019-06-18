@@ -1,13 +1,14 @@
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { connect } from "react-redux";
-import { login } from "../redux/actions/auth";
+import { register } from "../redux/actions/auth";
 
-const LoginPage = props => (
+
+const RegisterPage = props => (
   <div>
-    <h1>Login</h1>
+    <h1>Register</h1>
     <Formik
-      initialValues={{ email: '', password: '' }}
+      initialValues={{ email: '', password: '', nickname: '' }}
       validate={values => {
         let errors = {};
         if (!values.email) {
@@ -20,9 +21,11 @@ const LoginPage = props => (
         return errors;
       }}
       onSubmit={(values, { setSubmitting }) => {
-        props.login(values);
+        console.log(values);
+        props.register(values);
         setSubmitting(false);
         // setTimeout(() => {
+
         //   alert(JSON.stringify(values, null, 2));
         //   setSubmitting(false);
         // }, 400);
@@ -34,6 +37,8 @@ const LoginPage = props => (
           <ErrorMessage name="email" component="div" />
           <Field type="password" name="password" />
           <ErrorMessage name="password" component="div" />
+          <Field type="text" name="nickname" />
+          <ErrorMessage name="nickname" component="div" />
           <button type="submit" disabled={isSubmitting}>
             Submit
           </button>
@@ -44,7 +49,7 @@ const LoginPage = props => (
 );
 
 const mapDispatchToProps = dispatch => ({
-  login: data => dispatch(login(data))
+  register: data => dispatch(register(data))
 });
 
-export default connect(null, mapDispatchToProps)(LoginPage);
+export default connect(null, mapDispatchToProps)(RegisterPage);

@@ -1,29 +1,30 @@
 import {
-  BOARDS_LOADING,
-  BOARDS_LOAD_SUCCEED,
-  BOARDS_LOAD_FAILED
-} from "../actions/boards";
+  COLUMN_LOADING,
+  COLUMN_LOAD_SUCCEED,
+  COLUMN_LOAD_FAILED
+} from "../actions/columns";
 
 const initialState = {
   requestState: null,
   items: []
 };
 
-export const boardsReducer = (state = initialState, { type, payload }) => {
+export const columnsReducer = (state = initialState, { type, payload }) => {
   switch (type) {
-    case BOARDS_LOADING:
+    case COLUMN_LOADING:
       return { ...initialState, requestState: "loading" };
-    case BOARDS_LOAD_SUCCEED:
+    case COLUMN_LOAD_SUCCEED:
+      console.log(payload)
       return {
         requestState: "succeed",
-        items: payload,
+        items: payload,        
       };
-    case BOARDS_LOAD_FAILED:
+    case COLUMN_LOAD_FAILED:
       return {
         ...initialState,
         requestState: "error"
       };
-    
+
     default:
       return state;
   }

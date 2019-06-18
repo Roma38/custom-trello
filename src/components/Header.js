@@ -25,7 +25,7 @@ function Header(props) {
     <header className={classes.header}>
       <h1>Custom Trello</h1>
       {props.auth.authState === "unauthorized" && <div>
-        <Button component={Link} to="/" variant="contained" className={classes.button}>Register</Button>
+        <Button component={Link} to="/register" variant="contained" className={classes.button}>Register</Button>
         <Button component={Link} to="/login" variant="contained" className={classes.button}>Login</Button>
       </div>}
       {props.auth.authState === "loggedIn" && <div>
