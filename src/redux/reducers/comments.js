@@ -1,24 +1,24 @@
 import {
-  COLUMN_LOADING,
-  COLUMN_LOAD_SUCCEED,
-  COLUMN_LOAD_FAILED
-} from "../actions/columns";
+  COMMENTS_LOADING,
+  COMMENTS_LOAD_SUCCEED,
+  COMMENTS_LOAD_FAILED,
+} from "../actions/comments";
 
 const initialState = {
   requestState: null,
   items: []
 };
 
-export const columnsReducer = (state = initialState, { type, payload }) => {
+export const commentsReducer = (state = initialState, { type, payload }) => {
   switch (type) {
-    case COLUMN_LOADING:
+    case COMMENTS_LOADING:
       return { ...initialState, requestState: "loading" };
-    case COLUMN_LOAD_SUCCEED:
+    case COMMENTS_LOAD_SUCCEED:
       return {
         requestState: "succeed",
-        items: payload,        
+        items: payload,
       };
-    case COLUMN_LOAD_FAILED:
+    case COMMENTS_LOAD_FAILED:
       return {
         ...initialState,
         requestState: "error"

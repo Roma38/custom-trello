@@ -12,9 +12,10 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import { getColumns, addColumn } from '../../redux/actions/columns';
 import { getBoards } from '../../redux/actions/boards';
+import { getCards } from '../../redux/actions/cards';
 
 
-import ColumnCard from "./ColumnCard";
+import ColumnComponent from "./ColumnComponent";
 //import "./BoardsPage.css";
 
 
@@ -27,11 +28,12 @@ class BoardPage extends Component {
   }
 
   componentDidMount() {
-    this.props.getColumns();
     if (!this.props.boards.items.length) this.props.getBoards();
+    this.props.getColumns();
+    this.props.getCards();    
   }
 
-  createColumn = (name, authorId, boardId) => {
+  addColumnHandler = (name, authorId, boardId) => {
     this.props.addColumn(name, authorId, boardId);
     this.setState({
       isModalOpen: false,
@@ -49,18 +51,18 @@ class BoardPage extends Component {
       <div>
         {<h1>{boards.items.length && boards.items.find(({ id }) => id == boardId).name}</h1>}
         <div className="wrapper">
-          {columns.items.map(column => column.boardId == boardId && <ColumnCard key={column.id} column={column} />)}
+          {columns.items.map(column => column.boardId == boardId && <ColumnComponent key={column.id} column={column} />)}
           <IconButton onClick={() => this.setState({ isModalOpen: true })} aria-label="Delete">
             <Icon color="error" style={{ fontSize: 30 }}>add_circle</Icon>
           </IconButton>
           <Dialog open={this.state.isModalOpen} onClose={() => this.setState({ isModalOpen: false })} aria-labelledby="form-dialog-title">
-            <DialogTitle id="form-dialog-title">Create new board</DialogTitle>
+            <DialogTitle id="form-dialog-title">Create new Column</DialogTitle>
             <DialogContent>
               <TextField
                 autoFocus
                 margin="dense"
                 id="name"
-                label="Board name"
+                label="Column title"
                 type="text"
                 fullWidth
                 value={name}
@@ -69,7 +71,7 @@ class BoardPage extends Component {
             </DialogContent>
             <DialogActions>
               <Button onClick={() => this.setState({ isModalOpen: false })} color="primary">Cancel</Button>
-              <Button onClick={() => this.createColumn(name, authorId, boardId)} color="primary">Create</Button>
+              <Button onClick={() => this.addColumnHandler(name, authorId, boardId)} color="primary">Create</Button>
             </DialogActions>
           </Dialog>
         </div>
@@ -83,7 +85,8 @@ const mapStateToProps = ({ auth, boards, columns }) => ({ auth, boards, columns 
 const mapDispatchToProps = dispatch => ({
   addColumn: (name, authorId, boardId, order = 1) => dispatch(addColumn({ name, authorId, boardId, order })),
   getColumns: () => dispatch(getColumns()),
-  getBoards: () => dispatch(getBoards())
+  getBoards: () => dispatch(getBoards()),
+  getCards: () => dispatch(getCards())
 });
 
 // name: DataTypes.STRING,

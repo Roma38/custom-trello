@@ -1,24 +1,24 @@
 import {
-  COLUMN_LOADING,
-  COLUMN_LOAD_SUCCEED,
-  COLUMN_LOAD_FAILED
-} from "../actions/columns";
+  CARDS_LOADING,
+  CARDS_LOAD_SUCCEED,
+  CARDS_LOAD_FAILED,
+} from "../actions/cards";
 
 const initialState = {
   requestState: null,
   items: []
 };
 
-export const columnsReducer = (state = initialState, { type, payload }) => {
+export const cardsReducer = (state = initialState, { type, payload }) => {
   switch (type) {
-    case COLUMN_LOADING:
+    case CARDS_LOADING:
       return { ...initialState, requestState: "loading" };
-    case COLUMN_LOAD_SUCCEED:
+    case CARDS_LOAD_SUCCEED:
       return {
         requestState: "succeed",
         items: payload,        
       };
-    case COLUMN_LOAD_FAILED:
+    case CARDS_LOAD_FAILED:
       return {
         ...initialState,
         requestState: "error"

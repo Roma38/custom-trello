@@ -11,6 +11,7 @@ import BoardsControlPage from "./components/BoardsControlPage/BoardsControlPage"
 import BoardPage from "./components/BoardPage/BoardPage";
 import { getUsers } from "./redux/actions/users";
 import { authSucceed } from "./redux/actions/auth";
+import CardPage from './components/CardPage/CardPage';
 
 class App extends Component {
   componentDidMount() {
@@ -30,8 +31,8 @@ class App extends Component {
         <Container>
           <Header />
           <Switch>
-            {/* <Route exact path="/" render={() => <Redirect to="/halls" />} />
-            <Route path="/halls" component={HallsPage} />*/}
+            {/* <Route exact path="/" render={() => <Redirect to="/halls" />} />*/}
+            <Route path="/card/:id" component={CardPage} />
             <Route path="/board/:id" component={BoardPage} />
             <Route path="/register" component={RegisterPage} />
             <Route exact path="/boards" component={BoardsControlPage} />
