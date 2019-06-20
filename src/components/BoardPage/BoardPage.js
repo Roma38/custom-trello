@@ -1,22 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
+import { DragDropContext } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-//import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import { getColumns, addColumn } from '../../redux/actions/columns';
 import { getBoards } from '../../redux/actions/boards';
 import { getCards } from '../../redux/actions/cards';
 
-
 import ColumnComponent from "./ColumnComponent";
-//import "./BoardsPage.css";
 
 
 
@@ -30,7 +29,7 @@ class BoardPage extends Component {
   componentDidMount() {
     if (!this.props.boards.items.length) this.props.getBoards();
     this.props.getColumns();
-    this.props.getCards();    
+    this.props.getCards();
   }
 
   addColumnHandler = (name, authorId, boardId) => {
@@ -89,9 +88,4 @@ const mapDispatchToProps = dispatch => ({
   getCards: () => dispatch(getCards())
 });
 
-// name: DataTypes.STRING,
-//   authorId: DataTypes.STRING,
-//     boardId: DataTypes.STRING,
-//       order: DataTypes.STRING
-
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(BoardPage));
+export default DragDropContext(HTML5Backend)(connect(mapStateToProps, mapDispatchToProps)(withRouter(BoardPage)));
