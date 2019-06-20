@@ -2,6 +2,7 @@ import {
   CARDS_LOADING,
   CARDS_LOAD_SUCCEED,
   CARDS_LOAD_FAILED,
+  CHANGE_COLUMN
 } from "../actions/cards";
 
 const initialState = {
@@ -16,13 +17,20 @@ export const cardsReducer = (state = initialState, { type, payload }) => {
     case CARDS_LOAD_SUCCEED:
       return {
         requestState: "succeed",
-        items: payload,        
+        items: payload,
       };
     case CARDS_LOAD_FAILED:
       return {
         ...initialState,
         requestState: "error"
       };
+    case CHANGE_COLUMN:
+      const index = state.items.findIndex(({ id }) => id == payload.id)
+      console.log(payload)
+      return {
+        ...state,
+        items: [...state.items, { ...state.items[index], columnId: payload.columnId }]
+      }
 
     default:
       return state;

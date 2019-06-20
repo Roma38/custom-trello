@@ -3,6 +3,8 @@ import { API_HOST } from "../../config"
 export const CARDS_LOADING = "CARDS_LOADING";
 export const CARDS_LOAD_SUCCEED = "CARDS_LOAD_SUCCEED";
 export const CARDS_LOAD_FAILED = "CARDS_LOAD_FAILED";
+export const CHANGE_COLUMN = "CHANGE_COLUMN";
+
 
 export const cardsLoadStart = () => ({ type: CARDS_LOADING });
 
@@ -39,3 +41,17 @@ export const addCard = payload => dispatch => {
   }).then(() => dispatch(getCards()))
     .catch(error => alert("Oops, something went wrong :(", error));
 };
+
+export const changeColumn = payload => {
+  axios({
+    method: 'patch',
+    url: `${API_HOST}/cards/${payload.cardId}`,
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    data: { columnId: payload.columnId }
+  }).then(response => console.log("RESPONSE: " + response))
+    .catch(error => alert("Oops, something went wrong :(", error));
+  return ({
+    type: CHANGE_COLUMN,
+    payload
+  })
+}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { DragSource } from 'react-dnd'
+import { DragSource, DropTarget } from 'react-dnd';
 import { connect } from "react-redux";
 import { withStyles } from '@material-ui/styles';
 import Card from '@material-ui/core/Card';
@@ -15,7 +15,11 @@ import { ItemTypes } from "../../constants"
 const styles = {
   card: {
     minWidth: 275,
-    position: 'relative'
+    backgroudColor: '#FFB'
+  },
+  highlightedCard: {
+    minWidth: 275,
+    backgroudColor: '#FFB'
   },
   title: {
     fontSize: 14
@@ -28,8 +32,7 @@ const styles = {
 const cardSource = {
   beginDrag(props) {
     // Return the data describing the dragged item
-    console.log(props.card.id)
-    return { cardId: props.card.id}
+    return props.card
   },
 
   // endDrag(props, monitor, component) {
@@ -44,7 +47,26 @@ const cardSource = {
   // },
 }
 
-function collect(connect, monitor) {
+const cardTarget = {
+  canDrop(props, monitor) {
+    // You can disallow drop based on props or item
+    const columnId = monitor.getItem().columnId
+    return columnId === props.card.columnId && props.card !== monitor.getItem()
+  },
+
+  drop(props, monitor, component) {
+    if (monitor.didDrop()) {
+      // If you want, you can check whether some nested
+      // target already handled drop
+      return
+    }
+
+    //console.log("dropped " + monitor.getItem().id)
+    //return { moved: true }
+  },
+}
+
+function collectSource(connect, monitor) {
   return {
     // Call this function inside render()
     // to let React DnD handle the drag events:
@@ -54,16 +76,28 @@ function collect(connect, monitor) {
   }
 }
 
+function collectTarget(connect, monitor) {
+  return {
+      connectDropTarget: connect.dropTarget(),
+      isOver: monitor.isOver(),
+      isOverCurrent: monitor.isOver({ shallow: true }),
+      canDrop: monitor.canDrop(),
+      itemType: monitor.getItemType(),
+      item: monitor.getItem()
+  };
+}
+
+
 class CardComponent extends Component {
 
   render() {
     const { classes } = this.props;
-    const { connectDragSource } = this.props;
+    const { connectDragSource, connectDropTarget, isOver, canDrop } = this.props;
 
-    return connectDragSource(
+    return connectDropTarget(connectDragSource(
       <div>
         <ButtonBase component={Link} to={`/card/${this.props.card.id}`}>
-          <Card className={classes.card}>
+          <Card className={isOver && canDrop ? classes.highlightedCard : classes.card} style={isOver && canDrop ? { backgroundColor: '#FFB' } : {}}>
             <CardContent>
               {this.props.card.authorId === this.props.auth.id && (
                 <div className={classes.icons}>
@@ -114,7 +148,7 @@ class CardComponent extends Component {
         </Dialog> */}
           </Card>
         </ButtonBase>
-      </div>);
+      </div>));
   }
 }
 
@@ -124,4 +158,4 @@ const mapStateToProps = ({ auth }) => ({ auth });
 //   addCard: (name, authorId, columnId, description, order = 1, members = [authorId]) => dispatch(addCard({ name, authorId, columnId, description, order, members })),
 // });
 
-export default DragSource(ItemTypes.CARD, cardSource, collect)(connect(mapStateToProps)(withStyles(styles)(CardComponent)));
+export default DropTarget(ItemTypes.CARD, cardTarget, collectTarget)(DragSource(ItemTypes.CARD, cardSource, collectSource)(connect(mapStateToProps)(withStyles(styles)(CardComponent))));
