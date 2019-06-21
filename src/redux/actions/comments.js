@@ -20,14 +20,18 @@ export const getComments = () => dispatch => {
   axios
     .get(`${API_HOST}/comments`)
     .then(({ data }) => dispatch(commentsLoadSucceed(data)))
-    .catch(error => dispatch(commentsLoadFailed(error)));
+    .catch(() => dispatch(commentsLoadFailed()));
 };
 
 export const addComment = payload => dispatch => {
+  console.log("ADD COMENT FUNCTION FIRED")
   axios({
     method: 'post',
     url: `${API_HOST}/comments`,
     data: payload
-  }).then(() => dispatch(getComments()))
-    .catch(error => alert("Oops, something went wrong :(", error));
+  }).then((response) => {
+    dispatch(getComments())
+    //console.log(response)
+  })
+    .catch(error => alert("Oops, something went wrong :("));
 };

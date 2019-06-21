@@ -21,7 +21,7 @@ export const getColumns = () => dispatch => {
   axios
     .get(`${API_HOST}/columns`)
     .then(({ data }) => dispatch(columnsLoadSucceed(data)))
-    .catch(error => dispatch(columnsLoadFailed(error)));
+    .catch(() => dispatch(columnsLoadFailed()));
 };
 
 export const addColumn = payload => dispatch => {

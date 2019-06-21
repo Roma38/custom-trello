@@ -16,13 +16,12 @@ import CardPage from './components/CardPage/CardPage';
 class App extends Component {
   componentDidMount() {
     this.props.getUsers();
-    //id, email, nickname, token
     const id = localStorage.getItem('userId');
     const token = localStorage.getItem('token');
     const nickname = localStorage.getItem('nickname');
     const email = localStorage.getItem('email');
 
-    if (id && token) this.props.authSucceed({id, token, nickname, email});    
+    if (id && token) this.props.authSucceed({ id, token, nickname, email });
   }
 
   render() {
@@ -32,11 +31,11 @@ class App extends Component {
           <Header />
           <Switch>
             {/* <Route exact path="/" render={() => <Redirect to="/halls" />} />*/}
-            <Route path="/card/:id" component={CardPage} />
-            <Route path="/board/:id" component={BoardPage} />
-            <Route path="/register" component={RegisterPage} />
+            <Route path="/card/:id" component={CardPage} /> />
+            <Route path="/board/:id" component={BoardPage} /> />
+            <Route path="/register" component={RegisterPage} render={() => this.props.auth.authState === "loggedIn" && <Redirect to="/boards" />} />
             <Route exact path="/boards" component={BoardsControlPage} />
-            <Route path="/login" component={LoginPage} />
+            <Route path="/login" render={() => this.props.auth.authState === "loggedIn" ? <Redirect to="/boards" /> : <LoginPage />} />
           </Switch>
         </Container>
       </div>

@@ -1,29 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
+// import Icon from '@material-ui/core/Icon';
+// import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
+// import Dialog from '@material-ui/core/Dialog';
+// import DialogActions from '@material-ui/core/DialogActions';
+// import DialogContent from '@material-ui/core/DialogContent';
 //import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+//import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 
-// import { getColumns, addColumn } from '../../redux/actions/columns';
-// import { getBoards } from '../../redux/actions/boards';
 import { getOneCard } from '../../redux/actions/cards';
 import { getComments, addComment } from '../../redux/actions/comments';
 import CommentCard from './CommentCard';
-
-
-
-//import ColumnComponent from "./ColumnComponent";
-
-
-
 
 class CardPage extends Component {
   state = {

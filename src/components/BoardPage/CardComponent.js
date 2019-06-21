@@ -2,15 +2,32 @@ import React, { Component } from 'react';
 import { DragSource, DropTarget } from 'react-dnd';
 import { connect } from "react-redux";
 import { withStyles } from '@material-ui/styles';
+import { withRouter } from "react-router-dom";
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import ButtonBase from '@material-ui/core/ButtonBase';
+//import ButtonBase from '@material-ui/core/ButtonBase';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
-import { Link } from "react-router-dom";
+import TextField from '@material-ui/core/TextField';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+//import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import ListItemText from '@material-ui/core/ListItemText';
+import Select from '@material-ui/core/Select';
+import Checkbox from '@material-ui/core/Checkbox';
 
-import { ItemTypes } from "../../constants"
+//import { Link } from "react-router-dom";
+
+import { editCard, deleteCard, addMember } from "../../redux/actions/cards";
+import { ItemTypes } from "../../constants";
 
 const styles = {
   card: {
@@ -26,7 +43,33 @@ const styles = {
   },
   icons: {
     textAlign: 'right'
-  }
+  },
+  formControl: {
+    margin: 5,
+    minWidth: 120,
+    maxWidth: 300,
+  },
+  chips: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    margin: 2,
+  },
+  noLabel: {
+    marginTop: 15,
+  },
+};
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
 };
 
 const cardSource = {
@@ -78,45 +121,93 @@ function collectSource(connect, monitor) {
 
 function collectTarget(connect, monitor) {
   return {
-      connectDropTarget: connect.dropTarget(),
-      isOver: monitor.isOver(),
-      isOverCurrent: monitor.isOver({ shallow: true }),
-      canDrop: monitor.canDrop(),
-      itemType: monitor.getItemType(),
-      item: monitor.getItem()
+    connectDropTarget: connect.dropTarget(),
+    isOver: monitor.isOver(),
+    isOverCurrent: monitor.isOver({ shallow: true }),
+    canDrop: monitor.canDrop(),
+    itemType: monitor.getItemType(),
+    item: monitor.getItem()
   };
 }
 
 
 class CardComponent extends Component {
+  state = {
+    isModalOpen: false,
+    newCardName: this.props.card.name,
+    newCardDescription: this.props.card.description,
+    personName: this.props.users.items.length ? this.props.card.members.map(id => this.props.users.items.find(user => user.id == id).nickname) : []
+  }
+
+  handleEditClick = event => {
+    event.stopPropagation();
+    this.setState({ isModalOpen: true });
+  }
+
+  handleDeleteClick = (event, cardId) => {
+    event.stopPropagation();
+    this.props.deleteCard(cardId)
+  }
+
+  handleMembersChange = event => {
+    this.setState({ personName: event.target.value });
+    this.props.addMember(this.props.card.id, event.target.value);
+  }
 
   render() {
-    const { classes } = this.props;
-    const { connectDragSource, connectDropTarget, isOver, canDrop } = this.props;
+    const { isModalOpen, newCardName, newCardDescription, personName } = this.state;
+    const { connectDragSource, connectDropTarget, isOver, canDrop, classes, auth, card, editCard, deleteCard, history } = this.props;
+
+    console.log("USERS:")
+    console.log(this.props.users.items)
+    console.log("MEMBERS")
+    console.log(this.props.card.members)
 
     return connectDropTarget(connectDragSource(
       <div>
-        <ButtonBase component={Link} to={`/card/${this.props.card.id}`}>
-          <Card className={isOver && canDrop ? classes.highlightedCard : classes.card} style={isOver && canDrop ? { backgroundColor: '#FFB' } : {}}>
-            <CardContent>
-              {this.props.card.authorId === this.props.auth.id && (
-                <div className={classes.icons}>
-                  <IconButton /* onClick={() => this.setState({ isModalOpen: true })} */ aria-label="Delete">
-                    <Icon color="error" style={{ fontSize: 15 }}>edit</Icon>
-                  </IconButton>
-                  <IconButton /* onClick={() => this.setState({ isModalOpen: true })} */ className={classes.icon} aria-label="Delete">
-                    <Icon color="error" style={{ fontSize: 15 }}>delete</Icon>
-                  </IconButton>
-                </div>)}
-              <Typography className={classes.title} color="textSecondary" gutterBottom>
+        <Card onClick={() => { history.push(`/card/${card.id}`) }} className={isOver && canDrop ? classes.highlightedCard : classes.card} style={isOver && canDrop ? { backgroundColor: '#FFB' } : {}}>
+          <CardContent>
+            {card.authorId === auth.id && (
+              <div className={classes.icons}>
+                <IconButton onClick={this.handleEditClick} aria-label="Delete">
+                  <Icon color="error" style={{ fontSize: 15 }}>edit</Icon>
+                </IconButton>
+                <IconButton onClick={e => this.handleDeleteClick(e, card.id)} className={classes.icon} aria-label="Delete">
+                  <Icon color="error" style={{ fontSize: 15 }}>delete</Icon>
+                </IconButton>
+              </div>)}
+            <Typography className={classes.title} color="textSecondary" gutterBottom>
 
-                {this.props.card.name}
-              </Typography>
-              <p>{this.props.card.description}</p>
-            </CardContent>
+              {card.name}
+            </Typography>
+            <p>{card.description}</p>
+          </CardContent>
 
-            {/* <Dialog open={this.state.isModalOpen} onClose={() => this.setState({ isModalOpen: false })} aria-labelledby="form-dialog-title">
-          <DialogTitle id="form-dialog-title">Create new Card</DialogTitle>
+          <FormControl className={classes.formControl}>
+            <InputLabel htmlFor="select-multiple-checkbox">Members</InputLabel>
+            <Select
+              onClick={e => {
+                e.preventDefault();
+                e.stopPropagation()
+              }}
+              multiple
+              value={personName}
+              onChange={this.handleMembersChange}
+              input={<Input id="select-multiple-checkbox" />}
+              renderValue={selected => selected.join(', ')}
+              MenuProps={MenuProps}
+            >
+              {this.props.users.items.map(({ nickname }) => nickname).map(name => (
+                <MenuItem key={name} value={name}>
+                  <Checkbox checked={personName.indexOf(name) > -1} />
+                  <ListItemText primary={name} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Card>
+        <Dialog open={isModalOpen} onClose={() => this.setState({ isModalOpen: false })} aria-labelledby="form-dialog-title">
+          <DialogTitle id="form-dialog-title">Edit Card</DialogTitle>
           <DialogContent>
             <TextField
               autoFocus
@@ -139,23 +230,22 @@ class CardComponent extends Component {
               value={newCardDescription}
               onChange={(e) => this.setState({ newCardDescription: e.target.value })}
             />
-
           </DialogContent>
           <DialogActions>
             <Button onClick={() => this.setState({ isModalOpen: false })} color="primary">Cancel</Button>
-            <Button onClick={() => this.addCardHandler(newCardName, auth.id, column.id, newCardDescription)} color="primary">Create</Button>
+            <Button onClick={() => editCard(newCardName, newCardDescription, card.id)} color="primary">Edit</Button>
           </DialogActions>
-        </Dialog> */}
-          </Card>
-        </ButtonBase>
+        </Dialog>
       </div>));
   }
 }
 
-const mapStateToProps = ({ auth }) => ({ auth });
+const mapStateToProps = ({ auth, users }) => ({ auth, users });
 
-// const mapDispatchTothis.props = dispatch => ({
-//   addCard: (name, authorId, columnId, description, order = 1, members = [authorId]) => dispatch(addCard({ name, authorId, columnId, description, order, members })),
-// });
+const mapDispatchToProps = dispatch => ({
+  editCard: (name, description, cardId) => dispatch(editCard({ name, description, cardId })),
+  deleteCard: cardId => dispatch(deleteCard(cardId)),
+  addMember: (cardId, members) => dispatch(addMember({ cardId, members })),
+});
 
-export default DropTarget(ItemTypes.CARD, cardTarget, collectTarget)(DragSource(ItemTypes.CARD, cardSource, collectSource)(connect(mapStateToProps)(withStyles(styles)(CardComponent))));
+export default DropTarget(ItemTypes.CARD, cardTarget, collectTarget)(DragSource(ItemTypes.CARD, cardSource, collectSource)(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(CardComponent)))));
