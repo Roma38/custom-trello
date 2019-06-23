@@ -32,11 +32,13 @@ import { ItemTypes } from "../../constants";
 const styles = {
   card: {
     minWidth: 275,
-    backgroudColor: '#FFB'
+    backgroudColor: '#FFB',
+    marginTop: 10
   },
   highlightedCard: {
     minWidth: 275,
-    backgroudColor: '#FFB'
+    backgroudColor: '#FFB',
+    marginTop: 10
   },
   title: {
     fontSize: 14
@@ -131,12 +133,12 @@ function collectTarget(connect, monitor) {
 }
 
 
-class CardComponent extends Component {
+class CardComponent extends Component {  
   state = {
     isModalOpen: false,
     newCardName: this.props.card.name,
     newCardDescription: this.props.card.description,
-    personName: this.props.users.items.length ? this.props.card.members.map(id => this.props.users.items.find(user => user.id == id).nickname) : []
+    personName: this.props.users.requestState === "succeed" ? this.props.card.members.map(id => this.props.users.items.find(user => user.id == id).nickname) : []
   }
 
   handleEditClick = event => {
@@ -151,17 +153,21 @@ class CardComponent extends Component {
 
   handleMembersChange = event => {
     this.setState({ personName: event.target.value });
-    this.props.addMember(this.props.card.id, event.target.value);
+    const members = event.target.value.map(nickname => this.props.users.items.find(user => user.nickname === nickname).id)
+    console.log(members)
+    addMember(this.props.card.id, members);
   }
 
   render() {
     const { isModalOpen, newCardName, newCardDescription, personName } = this.state;
-    const { connectDragSource, connectDropTarget, isOver, canDrop, classes, auth, card, editCard, deleteCard, history } = this.props;
+    const { connectDragSource, connectDropTarget, isOver, canDrop, classes, auth, card, editCard, history } = this.props;
 
-    console.log("USERS:")
-    console.log(this.props.users.items)
-    console.log("MEMBERS")
-    console.log(this.props.card.members)
+    
+
+    // console.log("MEMBERS");
+    // console.log(this.props.card.members);
+    // console.log("USERS");
+    console.log(this.props.card.members.map(id => id))
 
     return connectDropTarget(connectDragSource(
       <div>
@@ -245,7 +251,7 @@ const mapStateToProps = ({ auth, users }) => ({ auth, users });
 const mapDispatchToProps = dispatch => ({
   editCard: (name, description, cardId) => dispatch(editCard({ name, description, cardId })),
   deleteCard: cardId => dispatch(deleteCard(cardId)),
-  addMember: (cardId, members) => dispatch(addMember({ cardId, members })),
+  //addMember: (cardId, members) => dispatch(addMember({ cardId, members })),
 });
 
 export default DropTarget(ItemTypes.CARD, cardTarget, collectTarget)(DragSource(ItemTypes.CARD, cardSource, collectSource)(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(CardComponent)))));

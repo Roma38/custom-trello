@@ -43,7 +43,7 @@ class BoardsControlPage extends Component {
         <h1>Pick a board or create new.</h1>
         <div className="wrapper">
           {this.props.boards.items.map(board => <BoardCard key={board.id} board={board} />)}
-          <IconButton onClick={() => this.setState({ isModalOpen: true })} aria-label="Delete">
+          <IconButton onClick={() => this.setState({ isModalOpen: true })} style={{ alignSelf: "center" }} aria-label="Delete">
             <Icon color="error" style={{ fontSize: 30 }}>add_circle</Icon>
           </IconButton>
           <Dialog open={this.state.isModalOpen} onClose={() => this.setState({ isModalOpen: false })} aria-labelledby="form-dialog-title">

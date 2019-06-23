@@ -28,18 +28,9 @@ export const register = data => dispatch => axios({
   url: `${API_HOST}/users`,
   data
 }).then(() => {
-  // dispatch(openPopup({
-  //   content: `You was successfully registered! Now you can login`,
-  //   attributes: { positive: true }
-  // }))
-  // dispatch(push('/login'))
   alert("You was succefuly registered");
 })
   .catch(error => {
-    // dispatch((openPopup({
-    //   content: error.response.data.errors ? error.response.data.errors.message : `Ooops, something went wrong :(`,
-    //   attributes: { negative: true }
-    // })))
     alert("Oops, somethig went wrong :(",error);
   });
 
@@ -50,18 +41,9 @@ export const login = ({ email, password }) => dispatch => {
     url: `${API_HOST}/users/signIn`,
     data: { email, password }
   }).then(({ data }) => {
-    // dispatch(openPopup({
-    //   content: `You was successfully logged in`,
-    //   attributes: { positive: true }
-    // }))
-    // dispatch(push('/halls'));
     dispatch(authSucceed({ ...data, email }));
   })
     .catch(error => {
-      // dispatch((openPopup({
-      //   content: error.response.data.message ? error.response.data.message : `Ooops, something went wrong :(`,
-      //   attributes: { negative: true }
-      // })))
       dispatch(authFailed(error))
     });
 };

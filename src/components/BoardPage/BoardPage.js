@@ -26,12 +26,6 @@ class BoardPage extends Component {
     newColumnName: ""
   }
 
-  componentDidMount() {
-    if (!this.props.boards.items.length) this.props.getBoards();
-    this.props.getColumns();
-    this.props.getCards();
-  }
-
   addColumnHandler = (name, authorId, boardId) => {
     this.props.addColumn(name, authorId, boardId);
     this.setState({
@@ -45,13 +39,13 @@ class BoardPage extends Component {
     const { id: authorId } = this.props.auth;
     const { id: boardId } = this.props.match.params;
     const { columns, boards } = this.props;
-
+    
     return (
       <div>
-        {<h1>{boards.items.length && boards.items.find(({ id }) => id == boardId).name}</h1>}
-        <div className="wrapper">
-          {columns.items.map(column => column.boardId == boardId && <ColumnComponent key={column.id} column={column} />)}
-          <IconButton onClick={() => this.setState({ isModalOpen: true })} aria-label="Delete">
+        {<h1>{boards.items.length && boardId && boards.items.find(({ id }) => id === parseInt(boardId)).name}</h1>}
+        <div className="wrapper columnsBoard">
+          {columns.items.map(column => column.boardId === boardId && <ColumnComponent key={column.id} column={column} />)}
+          <IconButton onClick={() => this.setState({ isModalOpen: true })} style={{ alignSelf: "center" }} aria-label="Delete">
             <Icon color="error" style={{ fontSize: 30 }}>add_circle</Icon>
           </IconButton>
           <Dialog open={this.state.isModalOpen} onClose={() => this.setState({ isModalOpen: false })} aria-labelledby="form-dialog-title">

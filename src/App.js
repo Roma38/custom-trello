@@ -11,6 +11,9 @@ import BoardsControlPage from "./components/BoardsControlPage/BoardsControlPage"
 import BoardPage from "./components/BoardPage/BoardPage";
 import { getUsers } from "./redux/actions/users";
 import { authSucceed } from "./redux/actions/auth";
+import { getBoards } from "./redux/actions/boards"; 
+import { getColumns } from "./redux/actions/columns";
+import { getCards } from "./redux/actions/cards";
 import CardPage from './components/CardPage/CardPage';
 
 class App extends Component {
@@ -21,6 +24,9 @@ class App extends Component {
     const nickname = localStorage.getItem('nickname');
     const email = localStorage.getItem('email');
 
+    this.props.getColumns();
+    this.props.getCards();
+    this.props.getBoards()
     if (id && token) this.props.authSucceed({ id, token, nickname, email });
   }
 
@@ -31,10 +37,10 @@ class App extends Component {
           <Header />
           <Switch>
             {/* <Route exact path="/" render={() => <Redirect to="/halls" />} />*/}
-            <Route path="/card/:id" component={CardPage} /> />
-            <Route path="/board/:id" component={BoardPage} /> />
-            <Route path="/register" component={RegisterPage} render={() => this.props.auth.authState === "loggedIn" && <Redirect to="/boards" />} />
-            <Route exact path="/boards" component={BoardsControlPage} />
+            <Route path="/card/:id" component={CardPage} /> 
+            <Route path="/board/:id" component={BoardPage} />}  />
+            <Route exact path="/boards" component={BoardsControlPage}/>
+            <Route path="/register" render={() => this.props.auth.authState === "loggedIn" ? <Redirect to="/boards" /> : <RegisterPage />}  />
             <Route path="/login" render={() => this.props.auth.authState === "loggedIn" ? <Redirect to="/boards" /> : <LoginPage />} />
           </Switch>
         </Container>
@@ -44,11 +50,14 @@ class App extends Component {
 
 }
 
-const mapStateToProps = ({ auth, users }) => ({ auth, users });
+const mapStateToProps = ({ auth, users, boards }) => ({ auth, users, boards });
 
 const mapDispatchToProps = dispatch => ({
   getUsers: () => dispatch(getUsers()),
-  authSucceed: payload => dispatch(authSucceed(payload))
+  authSucceed: payload => dispatch(authSucceed(payload)),
+  getBoards: () => dispatch(getBoards()),
+  getColumns: () => dispatch(getColumns()),
+  getCards: () => dispatch(getCards()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

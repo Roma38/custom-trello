@@ -76,13 +76,12 @@ export const changeColumn = payload => {
   })
 };
 
-export const addMember = payload => {
-  console.log(payload)
+export const addMember = (id, members) => {
   axios({
     method: 'patch',
-    url: `${API_HOST}/cards/${payload.id}`,
+    url: `${API_HOST}/cards/${id}`,
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    data: { members: payload.members }
+    data: { members }
   }).then(response => console.log(response))
     .catch(() => alert("Oops, something went wrong :("));
 };

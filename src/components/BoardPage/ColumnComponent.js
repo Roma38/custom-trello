@@ -20,7 +20,7 @@ import { ItemTypes } from "../../constants"
 
 const styles = {
   card: {
-    minWidth: 275,
+    minWidth: 275
   },
   bullet: {
     display: 'inline-block',
@@ -33,9 +33,12 @@ const styles = {
   pos: {
     marginBottom: 12,
   },
-  wrapper: {
+  cardWrapper: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+  },
+  colWrapper: {
+    marginRight: 10
   }
 };
 
@@ -89,17 +92,17 @@ class ColumnComponent extends Component {
     const { newCardName, newCardDescription } = this.state;
 
     return connectDropTarget(
-      <div>
+      <div className={classes.colWrapper}>
         <Card className={classes.card} style={isOver && canDrop ? { backgroundColor: '#FFB' } : {}}>
           <CardContent>
             <Typography className={classes.title} color="textSecondary" gutterBottom>
               {column.name}
             </Typography>
 
-            <div className={classes.wrapper}>
+            <div className={classes.cardWrapper}>
               {cards.items.map(card => card.columnId == column.id && <CardComponent key={card.id} card={card} />)}
 
-              <IconButton onClick={() => this.setState({ isModalOpen: true })} aria-label="Delete">
+              <IconButton onClick={() => this.setState({ isModalOpen: true })} style={{ alignSelf: "center" }} aria-label="Delete">
                 <Icon color="error" style={{ fontSize: 30 }}>add_circle</Icon>
               </IconButton>
             </div>
