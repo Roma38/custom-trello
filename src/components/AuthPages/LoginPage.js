@@ -1,10 +1,13 @@
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import Button from '@material-ui/core/Button';
 import { connect } from "react-redux";
-import { login } from "../redux/actions/auth";
+
+import { login } from "../../redux/actions/auth";
+import InputField from "./InputField";
 
 const LoginPage = props => (
-  <div>
+  <div className="authPage">
     <h1>Login</h1>
     <Formik
       initialValues={{ email: '', password: '' }}
@@ -16,6 +19,10 @@ const LoginPage = props => (
           !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
         ) {
           errors.email = 'Invalid email address';
+        } else if (!values.password) {
+          errors.password = 'Required';
+        } else if (values.password.length < 5) {
+          errors.password = 'Password should contain at least 5 characters';
         }
         return errors;
       }}
@@ -24,15 +31,11 @@ const LoginPage = props => (
         setSubmitting(false);
       }}
     >
-      {({ isSubmitting }) => (
+      {({ isSubmitting, isValid }) => (
         <Form>
-          <Field type="email" name="email" />
-          <ErrorMessage name="email" component="div" />
-          <Field type="password" name="password" />
-          <ErrorMessage name="password" component="div" />
-          <button type="submit" disabled={isSubmitting}>
-            Submit
-          </button>
+          <Field component={InputField} name="email" />
+          <Field type="password" component={InputField} name="password" />
+          <Button variant="outlined" type="submit" disabled={!isValid || isSubmitting}>Submit</Button>
         </Form>
       )}
     </Formik>

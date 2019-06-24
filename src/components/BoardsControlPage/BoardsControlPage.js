@@ -12,7 +12,6 @@ import Button from '@material-ui/core/Button';
 import { addBoard, getBoards } from '../../redux/actions/boards';
 
 import BoardCard from "./BoardCard";
-import "./BoardsControlPage.css";
 
 
 

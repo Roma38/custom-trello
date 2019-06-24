@@ -23,11 +23,18 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.authPage {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;  
+}
+
+.wrapper.columnsBoard {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  padding: 20px 0;
 }

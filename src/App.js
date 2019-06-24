@@ -5,8 +5,8 @@ import Container from '@material-ui/core/Container';
 import { connect } from "react-redux";
 
 import Header from "./components/Header";
-import LoginPage from "./components/LoginPage";
-import RegisterPage from "./components/RegisterPage";
+import LoginPage from "./components/AuthPages/LoginPage";
+import RegisterPage from "./components/AuthPages/RegisterPage";
 import BoardsControlPage from "./components/BoardsControlPage/BoardsControlPage";
 import BoardPage from "./components/BoardPage/BoardPage";
 import { getUsers } from "./redux/actions/users";
