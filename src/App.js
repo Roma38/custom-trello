@@ -33,7 +33,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Container>
+        <Container maxWidth={false}>
           <Header />
           <Switch>
             {/* <Route exact path="/" render={() => <Redirect to="/halls" />} />*/}

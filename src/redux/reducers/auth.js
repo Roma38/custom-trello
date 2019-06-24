@@ -26,7 +26,6 @@ export const authReducer = (state = initialState, { type, payload }) => {
       localStorage.setItem('token', token)
       return { authState: "loggedIn", id, email, nickname, token };
     case AUTH_FAILED:
-      alert("Oops, somethig went wrong ;(", payload);
       return { ...initialState };
     case LOG_OUT:
       localStorage.clear()

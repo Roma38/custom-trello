@@ -31,7 +31,8 @@ export const register = data => dispatch => axios({
   alert("You was succefuly registered");
 })
   .catch(error => {
-    alert("Oops, somethig went wrong :(",error);
+    console.log(error.response)
+    alert("Oops, somethig went wrong :(");
   });
 
 export const login = ({ email, password }) => dispatch => {
@@ -44,6 +45,8 @@ export const login = ({ email, password }) => dispatch => {
     dispatch(authSucceed({ ...data, email }));
   })
     .catch(error => {
-      dispatch(authFailed(error))
+      alert("Oops, somethig went wrong :(");
+      console.log(error.response)
+      dispatch(authFailed())
     });
 };
