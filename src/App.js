@@ -14,6 +14,7 @@ import { authSucceed } from "./redux/actions/auth";
 import { getBoards } from "./redux/actions/boards"; 
 import { getColumns } from "./redux/actions/columns";
 import { getCards } from "./redux/actions/cards";
+import { getNotifications } from "./redux/actions/notifications"
 import CardPage from './components/CardPage/CardPage';
 
 class App extends Component {
@@ -23,10 +24,10 @@ class App extends Component {
     const token = localStorage.getItem('token');
     const nickname = localStorage.getItem('nickname');
     const email = localStorage.getItem('email');
-
     this.props.getColumns();
     this.props.getCards();
-    this.props.getBoards()
+    this.props.getBoards();
+    this.props.getNotifications();
     if (id && token) this.props.authSucceed({ id, token, nickname, email });
   }
 
@@ -42,6 +43,7 @@ class App extends Component {
             <Route exact path="/boards" component={BoardsControlPage}/>
             <Route path="/register" render={() => this.props.auth.authState === "loggedIn" ? <Redirect to="/boards" /> : <RegisterPage />}  />
             <Route path="/login" render={() => this.props.auth.authState === "loggedIn" ? <Redirect to="/boards" /> : <LoginPage />} />
+            <Route exact path="/" render={() => this.props.auth.authState === "loggedIn" ? <Redirect to="/boards" /> : <Redirect to="/login" />} />
           </Switch>
         </Container>
       </div>
@@ -58,6 +60,7 @@ const mapDispatchToProps = dispatch => ({
   getBoards: () => dispatch(getBoards()),
   getColumns: () => dispatch(getColumns()),
   getCards: () => dispatch(getCards()),
+  getNotifications: () => dispatch(getNotifications())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -5,7 +5,6 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 
-import { getOneCard } from '../../redux/actions/cards';
 import { getComments, addComment } from '../../redux/actions/comments';
 import CommentCard from './CommentCard';
 
@@ -55,7 +54,6 @@ const mapStateToProps = ({ auth, boards, cards, comments }) => ({ auth, boards, 
 
 const mapDispatchToProps = dispatch => ({
   getComments: () => dispatch(getComments()),
-  getOneCard: id => dispatch(getOneCard(id)),
   addComment: (text, authorId, cardId) => dispatch(addComment({ text, authorId, cardId }))
 });
 

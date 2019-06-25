@@ -20,10 +20,6 @@ export const authReducer = (state = initialState, { type, payload }) => {
       return { ...initialState, authState: "loading" };
     case AUTH_SUCCEED:
       const { id, email, nickname, token } = payload;
-      localStorage.setItem('userId', id);
-      localStorage.setItem('email', email);
-      localStorage.setItem('nickname', nickname);
-      localStorage.setItem('token', token)
       return { authState: "loggedIn", id, email, nickname, token };
     case AUTH_FAILED:
       return { ...initialState };

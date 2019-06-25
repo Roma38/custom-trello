@@ -1,10 +1,11 @@
 import axios from "axios";
-import { API_HOST } from "../../config"
+import { API_HOST } from "../../config";
+import { addMoveCardNote } from "./notifications";
+
 export const CARDS_LOADING = "CARDS_LOADING";
 export const CARDS_LOAD_SUCCEED = "CARDS_LOAD_SUCCEED";
 export const CARDS_LOAD_FAILED = "CARDS_LOAD_FAILED";
 export const CHANGE_COLUMN = "CHANGE_COLUMN";
-
 
 export const cardsLoadStart = () => ({ type: CARDS_LOADING });
 
@@ -25,13 +26,6 @@ export const getCards = () => dispatch => {
     .catch(() => dispatch(cardsLoadFailed()));
 };
 
-export const getOneCard = id => dispatch => {
-  dispatch(cardsLoadStart());
-  axios
-    .get(`${API_HOST}/cards/${id}`)
-    .then(({ data }) => dispatch(cardsLoadSucceed([data])))
-    .catch(() => dispatch(cardsLoadFailed()));
-};
 
 export const addCard = payload => dispatch => {
   axios({
@@ -42,12 +36,12 @@ export const addCard = payload => dispatch => {
     .catch(() => alert("Oops, something went wrong :("));
 };
 
-export const editCard = ({name, description, cardId}) => dispatch => {
+export const editCard = ({ name, description, cardId }) => dispatch => {
   axios({
     method: 'patch',
     url: `${API_HOST}/cards/${cardId}`,
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    data: {name, description}
+    data: { name, description }
   }).then(() => dispatch(getCards()))
     .catch(() => alert("Oops, something went wrong :("));
 };
@@ -61,19 +55,23 @@ export const deleteCard = cardId => dispatch => {
     .catch(() => alert("Oops, something went wrong :("));
 };
 
-export const changeColumn = payload => {
-  console.log(payload)
+export const moveCard = payload => ({
+  type: CHANGE_COLUMN,
+  payload
+});
+
+export const changeColumn = payload => dispatch => {
+  const { columnId, cardId } = payload
   axios({
     method: 'patch',
-    url: `${API_HOST}/cards/${payload.id}`,
+    url: `${API_HOST}/cards/${cardId}`,
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    data: { columnId: payload.columnId }
-  }).then(response => console.log(response))
-    .catch(() => alert("Oops, something went wrong :("));
-  return ({
-    type: CHANGE_COLUMN,
-    payload
+    data: { columnId }
+  }).then(() => {
+    addMoveCardNote(payload);
+    dispatch(moveCard({ columnId, cardId }));
   })
+    .catch(() => alert("Oops, something went wrong :("));
 };
 
 export const addMember = (id, members) => {
@@ -85,3 +83,11 @@ export const addMember = (id, members) => {
   }).then(response => console.log(response))
     .catch(() => alert("Oops, something went wrong :("));
 };
+
+// export const getOneCard = id => dispatch => {
+//   dispatch(cardsLoadStart());
+//   axios
+//     .get(`${API_HOST}/cards/${id}`)
+//     .then(({ data }) => dispatch(cardsLoadSucceed([data])))
+//     .catch(() => dispatch(cardsLoadFailed()));
+// };

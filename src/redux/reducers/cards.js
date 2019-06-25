@@ -25,10 +25,9 @@ export const cardsReducer = (state = initialState, { type, payload }) => {
         requestState: "error"
       };
     case CHANGE_COLUMN:
-      const index = state.items.findIndex(({ id }) => id === payload.id)
+      const index = state.items.findIndex(({ id }) => id === payload.cardId)
       const newItems = [...state.items];
       newItems[index].columnId = payload.columnId;
-
       return {
         ...state,
         items: newItems

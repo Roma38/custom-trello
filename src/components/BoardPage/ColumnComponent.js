@@ -55,8 +55,9 @@ const cardTarget = {
       // target already handled drop
       return
     }
-    
-    props.changeColumn(props.column.id, monitor.getItem().id);
+    //columnId, cardId, userId, members, boardId, cardName, columnName, userNickName
+    const card = monitor.getItem()
+    props.changeColumn(props.column.id, card.id, props.auth.id, card.authorId, props.column.boardId, card.name, props.column.name, props.auth.nickname);
   }
 }
 
@@ -144,12 +145,20 @@ class ColumnComponent extends Component {
     );
   }
 }
-
+// Id,
+// name,
+// text,
+// authorId (userId)
+// recipients [ ] (userId)
+// cardId,
+// columnId,
+// boardId,
+// type: string (available types: move, edit, addUser, removeUser, addComment)
 const mapStateToProps = ({ auth, boards, columns, cards }) => ({ auth, boards, columns, cards });
 
 const mapDispatchToProps = dispatch => ({
   addCard: (name, authorId, columnId, description, order = 1, members = [authorId]) => dispatch(addCard({ name, authorId, columnId, description, order, members })),
-  changeColumn: (columnId, id) => dispatch(changeColumn({ columnId, id }))
+  changeColumn: (columnId, cardId, authorId, cardAuthor, boardId, cardName, columnName, userNickName) => dispatch(changeColumn({ columnId, cardId, authorId, cardAuthor, boardId, cardName, columnName, userNickName }))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(DropTarget(ItemTypes.CARD, cardTarget, collectTarget)(ColumnComponent)));

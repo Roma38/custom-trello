@@ -5,6 +5,7 @@ import { usersReduser } from "./users";
 import { columnsReducer } from "./columns";
 import { cardsReducer } from "./cards";
 import { commentsReducer } from "./comments";
+import { notificationsReducer } from "./notifications";
 
 
 const rootReduser = combineReducers({
@@ -13,7 +14,8 @@ const rootReduser = combineReducers({
   users: usersReduser,
   columns: columnsReducer,
   cards: cardsReducer,
-  comments: commentsReducer
+  comments: commentsReducer,
+  notifications: notificationsReducer
 });
 
 export default rootReduser;

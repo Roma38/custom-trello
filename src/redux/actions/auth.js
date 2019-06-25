@@ -42,7 +42,12 @@ export const login = ({ email, password }) => dispatch => {
     url: `${API_HOST}/users/signIn`,
     data: { email, password }
   }).then(({ data }) => {
-    dispatch(authSucceed({ ...data, email }));
+    console.log(data)
+    localStorage.setItem('userId', data.id);
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('nickname', data.nickname);
+    localStorage.setItem('email', data.email);
+    dispatch(authSucceed({ ...data }));
   })
     .catch(error => {
       alert("Oops, somethig went wrong :(");
