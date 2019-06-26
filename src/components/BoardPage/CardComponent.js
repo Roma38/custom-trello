@@ -6,14 +6,12 @@ import { withRouter } from "react-router-dom";
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-//import ButtonBase from '@material-ui/core/ButtonBase';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-//import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
@@ -23,8 +21,7 @@ import FormControl from '@material-ui/core/FormControl';
 import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
-
-//import { Link } from "react-router-dom";
+import Chip from '@material-ui/core/Chip';
 
 import { editCard, deleteCard, addMember } from "../../redux/actions/cards";
 import { ItemTypes } from "../../constants";
@@ -60,7 +57,7 @@ const styles = {
   },
   noLabel: {
     marginTop: 15,
-  },
+  }
 };
 
 const ITEM_HEIGHT = 48;
@@ -133,7 +130,7 @@ function collectTarget(connect, monitor) {
 }
 
 
-class CardComponent extends Component {  
+class CardComponent extends Component {
   state = {
     isModalOpen: false,
     newCardName: this.props.card.name,
@@ -152,15 +149,15 @@ class CardComponent extends Component {
   }
 
   handleMembersChange = event => {
+    const { card, auth, users } = this.props;
     this.setState({ personName: event.target.value });
-    const members = event.target.value.map(nickname => this.props.users.items.find(user => user.nickname === nickname).id)
-    addMember(this.props.card.id, members);
+    const members = event.target.value.map(nickname => users.items.find(user => user.nickname === nickname).id)
+    addMember(card.id, members, auth.id, card.columnId, card.boardId);
   }
 
   render() {
     const { isModalOpen, newCardName, newCardDescription, personName } = this.state;
     const { connectDragSource, connectDropTarget, isOver, canDrop, classes, auth, card, editCard, history } = this.props;
-
     return connectDropTarget(connectDragSource(
       <div>
         <Card onClick={() => { history.push(`/card/${card.id}`) }} className={isOver && canDrop ? classes.highlightedCard : classes.card} style={isOver && canDrop ? { backgroundColor: '#FFB' } : {}}>
@@ -175,7 +172,6 @@ class CardComponent extends Component {
                 </IconButton>
               </div>)}
             <Typography className={classes.title} color="textSecondary" gutterBottom>
-
               {card.name}
             </Typography>
             <p>{card.description}</p>
@@ -185,17 +181,23 @@ class CardComponent extends Component {
             <InputLabel htmlFor="select-multiple-checkbox">Members</InputLabel>
             <Select
               onClick={e => {
-                e.preventDefault();
                 e.stopPropagation()
               }}
               multiple
               value={personName}
               onChange={this.handleMembersChange}
               input={<Input id="select-multiple-checkbox" />}
-              renderValue={selected => selected.join(', ')}
+              renderValue={selected => (
+                <div className={classes.chips}>
+                  {selected.map(value => (
+                    <Chip key={value} label={value} className={classes.chip} />
+                  ))}
+                </div>
+              )}
               MenuProps={MenuProps}
+              readOnly={false}
             >
-              {this.props.users.items.map(({ nickname }) => nickname).map(name => (
+              {this.props.users.items.map(({ nickname: name }) => (
                 <MenuItem key={name} value={name}>
                   <Checkbox checked={personName.indexOf(name) > -1} />
                   <ListItemText primary={name} />

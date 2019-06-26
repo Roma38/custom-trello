@@ -145,15 +145,7 @@ class ColumnComponent extends Component {
     );
   }
 }
-// Id,
-// name,
-// text,
-// authorId (userId)
-// recipients [ ] (userId)
-// cardId,
-// columnId,
-// boardId,
-// type: string (available types: move, edit, addUser, removeUser, addComment)
+
 const mapStateToProps = ({ auth, boards, columns, cards }) => ({ auth, boards, columns, cards });
 
 const mapDispatchToProps = dispatch => ({

@@ -37,14 +37,14 @@ class BoardPage extends Component {
   render() {
     const { newColumnName: name } = this.state;
     const { id: authorId } = this.props.auth;
-    const { id: boardId } = this.props.match.params;
+    const boardId = parseInt(this.props.match.params.id);
     const { columns, boards } = this.props;
     
     return (
       <div>
-        {<h1>{boards.items.length && boardId && boards.items.find(({ id }) => id === parseInt(boardId)).name}</h1>}
+        {<h1>{boards.items.length && boardId && boards.items.find(({ id }) => id === boardId).name}</h1>}
         <div className="wrapper columnsBoard">
-          {columns.items.map(column => column.boardId === boardId && <ColumnComponent key={column.id} column={column} />)}
+          {columns.items.map(column => column.boardId == boardId && <ColumnComponent key={column.id} column={column} />)}
           <IconButton onClick={() => this.setState({ isModalOpen: true })} style={{ alignSelf: "center" }} aria-label="Delete">
             <Icon color="error" style={{ fontSize: 30 }}>add_circle</Icon>
           </IconButton>

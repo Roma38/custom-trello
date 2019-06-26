@@ -20,7 +20,7 @@ import CardPage from './components/CardPage/CardPage';
 class App extends Component {
   componentDidMount() {
     this.props.getUsers();
-    const id = localStorage.getItem('userId');
+    const id = parseInt(localStorage.getItem('userId'), 10);
     const token = localStorage.getItem('token');
     const nickname = localStorage.getItem('nickname');
     const email = localStorage.getItem('email');

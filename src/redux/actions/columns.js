@@ -25,6 +25,7 @@ export const getColumns = () => dispatch => {
 };
 
 export const addColumn = payload => dispatch => {
+  console.log(payload)
   axios({
     method: 'post',
     url: `${API_HOST}/columns`,

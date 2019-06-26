@@ -1,6 +1,6 @@
 import axios from "axios";
 import { API_HOST } from "../../config";
-import { addMoveCardNote } from "./notifications";
+import { addMoveCardNote, addMemberNote } from "./notifications";
 
 export const CARDS_LOADING = "CARDS_LOADING";
 export const CARDS_LOAD_SUCCEED = "CARDS_LOAD_SUCCEED";
@@ -74,13 +74,17 @@ export const changeColumn = payload => dispatch => {
     .catch(() => alert("Oops, something went wrong :("));
 };
 
-export const addMember = (id, members) => {
+export const addMember = (cardId, members, authorId, columnId, boardId) => {
+  console.log({cardId, members, authorId, columnId, boardId})
   axios({
     method: 'patch',
-    url: `${API_HOST}/cards/${id}`,
+    url: `${API_HOST}/cards/${cardId}`,
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     data: { members }
-  }).then(response => console.log(response))
+  }).then(({ data }) => {
+    console.log(data[1][0]);
+    //addMemberNote(authorId, members);
+  })
     .catch(() => alert("Oops, something went wrong :("));
 };
 

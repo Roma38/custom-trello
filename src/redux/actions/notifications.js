@@ -27,7 +27,23 @@ export const addMoveCardNote = payload => {
   const { columnId, cardId, authorId, cardAuthor, boardId, cardName, columnName, userNickName } = payload;
   const name = `${cardName} was moved to ${columnName}`;
   const text = `${cardAuthor === authorId ? "You" : userNickName} moved card ${cardName} to the ${columnName} column`;
-  const data = { name, text, authorId, recipients: [cardAuthor], cardId, columnId, boardId, type: "move" }
+  const data = { name, text, authorId, recipients: [cardAuthor], cardId, columnId, boardId, type: "move" };
+  axios({
+    method: 'post',
+    url: `${API_HOST}/notifications`,
+    data
+  }).then((response) => {
+    //console.log(response)
+  })
+    .catch(() => alert("Oops, something went wrong :("));
+};
+
+export const addMemberNote = payload => {
+  const { columnId, cardId, authorId, boardId, cardName, authorNickname, recipients } = payload;
+
+  const name = `You was added to ${cardName} card`;
+  const text = `${authorNickname} added you to ${cardName} card`;
+  const data = { name, text, authorId, recipients, cardId, columnId, boardId, type: "addUser" };
   axios({
     method: 'post',
     url: `${API_HOST}/notifications`,
