@@ -23,8 +23,9 @@ import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
 
-import { editCard, deleteCard, addMember } from "../../redux/actions/cards";
+import { editCard, deleteCard, addMember, changeOrder } from "../../redux/actions/cards";
 import { ItemTypes } from "../../constants";
+import { compose } from 'redux';
 
 const styles = {
   card: {
@@ -102,7 +103,11 @@ const cardTarget = {
       // target already handled drop
       return
     }
-
+    const droppedCard = monitor.getItem();
+    const targetCard = props.card;
+    props.changeOrder(droppedCard, targetCard);
+    //console.log("props: ", props);
+    //const targetCard = 
     //console.log("dropped " + monitor.getItem().id)
     //return { moved: true }
   },
@@ -135,7 +140,7 @@ class CardComponent extends Component {
     isModalOpen: false,
     newCardName: this.props.card.name,
     newCardDescription: this.props.card.description,
-    personName: this.props.users.requestState === "succeed" ? this.props.card.members.map(id => this.props.users.items.find(user => user.id == parseInt(id)).nickname) : []
+    card: null
   }
 
   handleEditClick = event => {
@@ -143,21 +148,25 @@ class CardComponent extends Component {
     this.setState({ isModalOpen: true });
   }
 
-  handleDeleteClick = (event, cardId) => {
+  handleDeleteClick = (event, card) => {
     event.stopPropagation();
-    this.props.deleteCard(cardId)
+    this.props.deleteCard(card)
   }
 
   handleMembersChange = event => {
     const { card, auth, users } = this.props;
-    this.setState({ personName: event.target.value });
-    const members = event.target.value.map(nickname => users.items.find(user => user.nickname === nickname).id)
-    addMember(card.id, members, auth.id, card.columnId, card.boardId);
+    const boardId = parseInt(this.props.match.params.id, 10);
+    const members = event.target.value.map(({ id }) => id);
+
+    const addedMember = card.members.length < members.length ? event.target.value[members.length - 1] : null;
+    this.props.addMember([card.id, members, auth.id, card.columnId, boardId, addedMember, auth.nickname]);
   }
 
   render() {
-    const { isModalOpen, newCardName, newCardDescription, personName } = this.state;
-    const { connectDragSource, connectDropTarget, isOver, canDrop, classes, auth, card, editCard, history } = this.props;
+    const { isModalOpen, newCardName, newCardDescription } = this.state;
+    const { connectDragSource, connectDropTarget, isOver, canDrop, classes, auth, users, card, editCard, history } = this.props;
+    const members = card.members.map(id => users.items.find(user => user.id == id));
+
     return connectDropTarget(connectDragSource(
       <div>
         <Card onClick={() => { history.push(`/card/${card.id}`) }} className={isOver && canDrop ? classes.highlightedCard : classes.card} style={isOver && canDrop ? { backgroundColor: '#FFB' } : {}}>
@@ -167,7 +176,7 @@ class CardComponent extends Component {
                 <IconButton onClick={this.handleEditClick} aria-label="Delete">
                   <Icon color="error" style={{ fontSize: 15 }}>edit</Icon>
                 </IconButton>
-                <IconButton onClick={e => this.handleDeleteClick(e, card.id)} className={classes.icon} aria-label="Delete">
+                <IconButton onClick={e => this.handleDeleteClick(e, card)} className={classes.icon} aria-label="Delete">
                   <Icon color="error" style={{ fontSize: 15 }}>delete</Icon>
                 </IconButton>
               </div>)}
@@ -180,27 +189,26 @@ class CardComponent extends Component {
           <FormControl className={classes.formControl}>
             <InputLabel htmlFor="select-multiple-checkbox">Members</InputLabel>
             <Select
-              onClick={e => {
-                e.stopPropagation()
-              }}
+              onClick={e => e.stopPropagation()}
               multiple
-              value={personName}
+              value={members}
               onChange={this.handleMembersChange}
               input={<Input id="select-multiple-checkbox" />}
               renderValue={selected => (
                 <div className={classes.chips}>
-                  {selected.map(value => (
-                    <Chip key={value} label={value} className={classes.chip} />
+                  {selected.map(member => (
+                    <Chip key={member.id} label={member.nickname} className={classes.chip} />
                   ))}
                 </div>
               )}
               MenuProps={MenuProps}
               readOnly={false}
             >
-              {this.props.users.items.map(({ nickname: name }) => (
-                <MenuItem key={name} value={name}>
-                  <Checkbox checked={personName.indexOf(name) > -1} />
-                  <ListItemText primary={name} />
+              {users.items.map(user => (
+                user.id !== auth.id &&
+                <MenuItem key={user.id} value={user}>
+                  <Checkbox checked={members.indexOf(user) > -1} />
+                  <ListItemText primary={user.nickname} />
                 </MenuItem>
               ))}
             </Select>
@@ -244,7 +252,10 @@ const mapStateToProps = ({ auth, users }) => ({ auth, users });
 
 const mapDispatchToProps = dispatch => ({
   editCard: (name, description, cardId) => dispatch(editCard({ name, description, cardId })),
-  deleteCard: cardId => dispatch(deleteCard(cardId)),
+  deleteCard: card => dispatch(deleteCard(card)),
+  addMember: payload => dispatch(addMember(...payload)),
+  changeOrder: (droppedCard, targetCard) => dispatch(changeOrder({ droppedCard, targetCard }))
 });
 
-export default DropTarget(ItemTypes.CARD, cardTarget, collectTarget)(DragSource(ItemTypes.CARD, cardSource, collectSource)(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(CardComponent)))));
+//export default DropTarget(ItemTypes.CARD, cardTarget, collectTarget)(DragSource(ItemTypes.CARD, cardSource, collectSource)(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(CardComponent)))));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter((DropTarget(ItemTypes.CARD, cardTarget, collectTarget)(DragSource(ItemTypes.CARD, cardSource, collectSource)(CardComponent))))));

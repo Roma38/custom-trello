@@ -37,6 +37,7 @@ class BoardsControlPage extends Component {
   render() {
     const { newBoardName: name } = this.state;
     const { id: authorId } = this.props.auth
+    //console.log(authorId)
     return (
       <div>
         <h1>Pick a board or create new.</h1>

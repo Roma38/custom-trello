@@ -55,9 +55,10 @@ const cardTarget = {
       // target already handled drop
       return
     }
-    //columnId, cardId, userId, members, boardId, cardName, columnName, userNickName
     const card = monitor.getItem()
-    props.changeColumn(props.column.id, card.id, props.auth.id, card.authorId, props.column.boardId, card.name, props.column.name, props.auth.nickname);
+    const newOrder = Math.max(...props.cards.items.map(card => card.columnId === props.column.id ? card.order : 0)) + 1;
+    //console.log("props: ", props)
+    props.changeColumn(props.column.id, props.auth.id, props.column.boardId, props.column.name, props.auth.nickname, newOrder, card);
   }
 }
 
@@ -79,8 +80,16 @@ class ColumnComponent extends Component {
     newCardDescription: ""
   }
 
+  getColumnCards = () => {
+    const {cards, column} = this.props;
+    const columnCards = cards.items.filter(card => card.columnId == column.id).sort((a, b) => a.order < b.order ? -1 : 1);
+    //console.log('COLUMN CARDS', columnCards)
+    return columnCards;
+  }
+
   addCardHandler = (name, authorId, columnId, description) => {
-    this.props.addCard(name, authorId, columnId, description);
+    const order = Math.max(...this.props.cards.items.map(card => card.columnId === columnId ? card.order : 0)) + 1;
+    this.props.addCard(name, authorId, columnId, description, order);
     this.setState({
       isModalOpen: false,
       newCardName: "",
@@ -101,7 +110,7 @@ class ColumnComponent extends Component {
             </Typography>
 
             <div className={classes.cardWrapper}>
-              {cards.items.map(card => card.columnId == column.id && <CardComponent key={card.id} card={card} />)}
+              {this.getColumnCards().map(card => <CardComponent key={card.id} card={card} />)}
 
               <IconButton onClick={() => this.setState({ isModalOpen: true })} style={{ alignSelf: "center" }} aria-label="Delete">
                 <Icon color="error" style={{ fontSize: 30 }}>add_circle</Icon>
@@ -150,7 +159,7 @@ const mapStateToProps = ({ auth, boards, columns, cards }) => ({ auth, boards, c
 
 const mapDispatchToProps = dispatch => ({
   addCard: (name, authorId, columnId, description, order = 1, members = [authorId]) => dispatch(addCard({ name, authorId, columnId, description, order, members })),
-  changeColumn: (columnId, cardId, authorId, cardAuthor, boardId, cardName, columnName, userNickName) => dispatch(changeColumn({ columnId, cardId, authorId, cardAuthor, boardId, cardName, columnName, userNickName }))
+  changeColumn: (columnId, authorId, boardId, columnName, userNickName, order, card) => dispatch(changeColumn({ columnId, authorId, boardId, columnName, userNickName, order, card }))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(DropTarget(ItemTypes.CARD, cardTarget, collectTarget)(ColumnComponent)));

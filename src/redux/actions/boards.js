@@ -26,10 +26,11 @@ export const getBoards = () => dispatch => {
 };
 
 export const addBoard = payload => dispatch => {
+  console.log(payload);
   axios({
     method: 'post',
     url: `${API_HOST}/boards`,
     data: payload
-  }).then(({ data }) => dispatch(getBoards()))
+  }).then(() => dispatch(getBoards()))
     .catch(error => alert("Oops, something went wrong :(", error));
 };

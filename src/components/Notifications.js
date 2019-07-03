@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
 
 function Header(props) {
   const classes = useStyles();
-  const notifications = props.notifications.requestState === 'succeed' && props.auth.authState === 'loggedIn' ? props.notifications.items.filter(note => note.recipients && note.recipients.includes(props.auth.id)) : [];
+  const notifications = props.notifications.requestState === 'succeed' && props.auth.authState === 'loggedIn' ? props.notifications.items.filter(note => note.recipients && note.recipients.includes(props.auth.id.toString())) : [];
   return (
     <header className={classes.header}>
       <h1>Custom Trello</h1>
