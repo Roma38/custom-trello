@@ -81,8 +81,8 @@ export const changeOrder = payload => ({
 });
 
 export const changeColumn = payload => dispatch => {
-  const { columnId, card, order } = payload
-  //columnId, authorId, boardId, columnName, userNickName, order, card
+  const { columnId, card, order, targetCard } = payload;
+  //console.log("changeColumn");
   axios({
     method: 'patch',
     url: `${API_HOST}/cards/${card.id}`,
@@ -91,24 +91,24 @@ export const changeColumn = payload => dispatch => {
   }).then(() => {
     addMoveCardNote(payload);
     dispatch(moveCard({ columnId, card, order }));
+  }).then(() => {
+    if (targetCard) dispatch(changeOrder({ droppedCard: card, targetCard }))
   })
-    .catch(() => alert("Oops, something went wrong :("));
+    .catch(error => {
+      console.log(error)
+      alert("Oops, something went wrong :(")
+    });
 };
 
 export const addMember = (cardId, members, authorId, columnId, boardId, addedMember, authorNickname) => dispatch => {
-  //console.log({cardId, members, authorId, columnId, boardId})
   axios({
     method: 'patch',
     url: `${API_HOST}/cards/${cardId}`,
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     data: { members }
   }).then(({ data }) => {
-    //console.log(data[1][0]);
     const cardName = data[1][0].name
-
     dispatch(getOneCard(cardId));
-    //columnId, cardId, authorId, boardId, cardName, authorNickname, recipients
-    //console.log(columnId, cardId, authorId, boardId, cardName, authorNickname, addedMember)
     if (addedMember) addMemberNote({ columnId, cardId, authorId, boardId, cardName, authorNickname, addedMember });
   })
     .catch(() => alert("Oops, something went wrong :("));

@@ -1,7 +1,8 @@
 import {
   NOTIFICATIONS_LOADING,
   NOTIFICATIONS_LOAD_SUCCEED,
-  NOTIFICATIONS_LOAD_FAILED
+  NOTIFICATIONS_LOAD_FAILED,
+  DELETE_NOTIFICATION
 } from "../actions/notifications";
 
 const initialState = {
@@ -23,6 +24,11 @@ export const notificationsReducer = (state = initialState, { type, payload }) =>
         ...initialState,
         requestState: "error"
       };
+    case DELETE_NOTIFICATION:
+      const noteIndex = state.items.findIndex(note => note.id === payload);
+      const newItems = [...state.items];
+      newItems.splice(noteIndex, 1);
+      return { ...state, items: newItems };
 
     default:
       return state;

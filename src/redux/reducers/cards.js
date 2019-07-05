@@ -1,3 +1,5 @@
+import axios from "axios";
+import { API_HOST } from "../../config";
 import {
   CARDS_LOADING,
   CARDS_LOAD_SUCCEED,
@@ -12,6 +14,19 @@ const initialState = {
   requestState: null,
   items: []
 };
+
+function changeOrderPatchRequest(card) {
+  axios({
+    method: 'patch',
+    url: `${API_HOST}/cards/${card.id}`,
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    data: { order: card.order }
+  }).then(/* response => console.log(response) */)
+    .catch(error => {
+      console.log(error)
+      alert("Oops, something went wrong :(")
+    });
+}
 
 export const cardsReducer = (state = initialState, { type, payload }) => {
   switch (type) {
@@ -34,6 +49,7 @@ export const cardsReducer = (state = initialState, { type, payload }) => {
       newItems.forEach(card => {
         if (card.columnId === columnId && card.order > cardOrder) {
           --card.order;
+          changeOrderPatchRequest(card);
         };
         if (card.id === payload.card.id) {
           card.columnId = payload.columnId;
@@ -53,10 +69,15 @@ export const cardsReducer = (state = initialState, { type, payload }) => {
         if (card.columnId === droppedCard.columnId) {
           if (droppedCardOrder < targetCardOrder) {
             if (card.order > droppedCardOrder && card.order <= targetCardOrder)--card.order;
+            changeOrderPatchRequest(card);
           } else {
             if (card.order < droppedCardOrder && card.order >= targetCardOrder)++card.order;
+            changeOrderPatchRequest(card)
           }
-          if (card.id === droppedCard.id) card.order = targetCardOrder;
+          if (card.id === droppedCard.id) {
+            card.order = targetCardOrder;
+            changeOrderPatchRequest(card)
+          }
         }
       });
       return {
@@ -64,11 +85,11 @@ export const cardsReducer = (state = initialState, { type, payload }) => {
         items: cards
       };
     case DELETE_CARD:
-      console.log(payload);
       const newCards = [...state.items];
       newCards.forEach(card => {
         if (card.columnId === payload.columnId) {
           if (card.order > payload.order)--card.order;
+          changeOrderPatchRequest(card);
         }
       });
       newCards.splice(newCards.indexOf(payload), 1);

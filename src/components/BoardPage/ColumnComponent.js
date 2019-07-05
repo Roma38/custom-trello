@@ -46,7 +46,7 @@ const cardTarget = {
   canDrop(props, monitor) {
     // You can disallow drop based on props or item
     const columnId = monitor.getItem().columnId
-    return columnId != props.column.id
+    return columnId !== props.column.id
   },
 
   drop(props, monitor, component) {
@@ -57,7 +57,6 @@ const cardTarget = {
     }
     const card = monitor.getItem()
     const newOrder = Math.max(...props.cards.items.map(card => card.columnId === props.column.id ? card.order : 0)) + 1;
-    //console.log("props: ", props)
     props.changeColumn(props.column.id, props.auth.id, props.column.boardId, props.column.name, props.auth.nickname, newOrder, card);
   }
 }
@@ -82,8 +81,7 @@ class ColumnComponent extends Component {
 
   getColumnCards = () => {
     const {cards, column} = this.props;
-    const columnCards = cards.items.filter(card => card.columnId == column.id).sort((a, b) => a.order < b.order ? -1 : 1);
-    //console.log('COLUMN CARDS', columnCards)
+    const columnCards = cards.items.filter(card => card.columnId === column.id).sort((a, b) => a.order < b.order ? -1 : 1);
     return columnCards;
   }
 
@@ -98,7 +96,7 @@ class ColumnComponent extends Component {
   }
 
   render() {
-    const { classes, cards, column, auth, isOver, canDrop, connectDropTarget } = this.props;
+    const { classes, column, auth, isOver, canDrop, connectDropTarget } = this.props;
     const { newCardName, newCardDescription } = this.state;
 
     return connectDropTarget(

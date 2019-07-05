@@ -3,6 +3,7 @@ import { API_HOST } from "../../config"
 export const NOTIFICATIONS_LOADING = "NOTIFICATIONS_LOADING";
 export const NOTIFICATIONS_LOAD_SUCCEED = "NOTIFICATIONS_LOAD_SUCCEED";
 export const NOTIFICATIONS_LOAD_FAILED = "NOTIFICATIONS_LOAD_FAILED";
+export const DELETE_NOTIFICATION = "DELETE_NOTIFICATION";
 
 export const notificationsLoadStart = () => ({ type: NOTIFICATIONS_LOADING });
 
@@ -22,6 +23,20 @@ export const getNotifications = () => dispatch => {
     .then(({ data }) => dispatch(notificationsLoadSucceed(data)))
     .catch(() => dispatch(notificationsLoadFailed()));
 };
+
+export const deleteNote = payload =>({
+  type: DELETE_NOTIFICATION,
+  payload
+})
+
+export const deleteNotification = id => dispatch => {
+  dispatch(deleteNote(id))
+  axios({
+    method: 'delete',
+    url: `${API_HOST}/notifications/${id}`,
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+  })
+}
 
 export const addMoveCardNote = payload => {
   const { columnId, authorId, boardId, columnName, userNickName, card } = payload;

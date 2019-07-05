@@ -23,20 +23,21 @@ import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
 
-import { editCard, deleteCard, addMember, changeOrder } from "../../redux/actions/cards";
+import { editCard, deleteCard, addMember, changeOrder, changeColumn } from "../../redux/actions/cards";
 import { ItemTypes } from "../../constants";
-import { compose } from 'redux';
 
 const styles = {
   card: {
     minWidth: 275,
     backgroudColor: '#FFB',
-    marginTop: 10
+    marginTop: 10,
+    maxWidth: 350
   },
   highlightedCard: {
     minWidth: 275,
     backgroudColor: '#FFB',
-    marginTop: 10
+    marginTop: 10,
+    maxWidth: 350
   },
   title: {
     fontSize: 14
@@ -93,8 +94,9 @@ const cardSource = {
 const cardTarget = {
   canDrop(props, monitor) {
     // You can disallow drop based on props or item
-    const columnId = monitor.getItem().columnId
-    return columnId === props.card.columnId && props.card !== monitor.getItem()
+    // const columnId = monitor.getItem().columnId
+    // return columnId === props.card.columnId && props.card !== monitor.getItem()
+    return props.card !== monitor.getItem();
   },
 
   drop(props, monitor, component) {
@@ -105,8 +107,16 @@ const cardTarget = {
     }
     const droppedCard = monitor.getItem();
     const targetCard = props.card;
+    //console.log("targetCard: ",targetCard)
+    if (droppedCard.columnId !== targetCard.columnId) {
+      const column = props.columns.items.find(column => column.id === targetCard.columnId);
+      const newOrder = Math.max(...props.cards.items.map(card => card.columnId === targetCard.columnId ? card.order : 0)) + 1;
+      return props.changeColumn(targetCard.columnId, props.auth.id, column.boardId, column.name, props.auth.nickname, newOrder, droppedCard, targetCard);
+    }
     props.changeOrder(droppedCard, targetCard);
-    //console.log("props: ", props);
+
+    //
+
     //const targetCard = 
     //console.log("dropped " + monitor.getItem().id)
     //return { moved: true }
@@ -154,7 +164,7 @@ class CardComponent extends Component {
   }
 
   handleMembersChange = event => {
-    const { card, auth, users } = this.props;
+    const { card, auth } = this.props;
     const boardId = parseInt(this.props.match.params.id, 10);
     const members = event.target.value.map(({ id }) => id);
 
@@ -165,12 +175,13 @@ class CardComponent extends Component {
   render() {
     const { isModalOpen, newCardName, newCardDescription } = this.state;
     const { connectDragSource, connectDropTarget, isOver, canDrop, classes, auth, users, card, editCard, history } = this.props;
-    const members = card.members.map(id => users.items.find(user => user.id == id));
+    const members = card.members.map(id => users.items.find(user => user.id === id));
 
     return connectDropTarget(connectDragSource(
       <div>
         <Card onClick={() => { history.push(`/card/${card.id}`) }} className={isOver && canDrop ? classes.highlightedCard : classes.card} style={isOver && canDrop ? { backgroundColor: '#FFB' } : {}}>
           <CardContent>
+            <h2>{card.order}</h2>
             {card.authorId === auth.id && (
               <div className={classes.icons}>
                 <IconButton onClick={this.handleEditClick} aria-label="Delete">
@@ -197,7 +208,7 @@ class CardComponent extends Component {
               renderValue={selected => (
                 <div className={classes.chips}>
                   {selected.map(member => (
-                    <Chip key={member.id} label={member.nickname} className={classes.chip} />
+                    member && <Chip key={member.id} label={member.nickname} className={classes.chip} />
                   ))}
                 </div>
               )}
@@ -248,14 +259,14 @@ class CardComponent extends Component {
   }
 }
 
-const mapStateToProps = ({ auth, users }) => ({ auth, users });
+const mapStateToProps = ({ auth, users, columns, cards }) => ({ auth, users, columns, cards });
 
 const mapDispatchToProps = dispatch => ({
   editCard: (name, description, cardId) => dispatch(editCard({ name, description, cardId })),
   deleteCard: card => dispatch(deleteCard(card)),
   addMember: payload => dispatch(addMember(...payload)),
-  changeOrder: (droppedCard, targetCard) => dispatch(changeOrder({ droppedCard, targetCard }))
+  changeOrder: (droppedCard, targetCard) => dispatch(changeOrder({ droppedCard, targetCard })),
+  changeColumn: (columnId, authorId, boardId, columnName, userNickName, order, card, targetCard) => dispatch(changeColumn({ columnId, authorId, boardId, columnName, userNickName, order, card, targetCard }))
 });
 
-//export default DropTarget(ItemTypes.CARD, cardTarget, collectTarget)(DragSource(ItemTypes.CARD, cardSource, collectSource)(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(CardComponent)))));
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter((DropTarget(ItemTypes.CARD, cardTarget, collectTarget)(DragSource(ItemTypes.CARD, cardSource, collectSource)(CardComponent))))));

@@ -11,14 +11,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
+
 import { getColumns, addColumn } from '../../redux/actions/columns';
 import { getBoards } from '../../redux/actions/boards';
 import { getCards } from '../../redux/actions/cards';
-
 import ColumnComponent from "./ColumnComponent";
-
-
-
 
 class BoardPage extends Component {
   state = {
@@ -44,7 +41,7 @@ class BoardPage extends Component {
       <div>
         {<h1>{boards.items.length && boardId && boards.items.find(({ id }) => id === boardId).name}</h1>}
         <div className="wrapper columnsBoard">
-          {columns.items.map(column => column.boardId == boardId && <ColumnComponent key={column.id} column={column} />)}
+          {columns.items.map(column => column.boardId === boardId && <ColumnComponent key={column.id} column={column} />)}
           <IconButton onClick={() => this.setState({ isModalOpen: true })} style={{ alignSelf: "center" }} aria-label="Delete">
             <Icon color="error" style={{ fontSize: 30 }}>add_circle</Icon>
           </IconButton>

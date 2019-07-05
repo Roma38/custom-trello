@@ -44,7 +44,7 @@ class CardPage extends Component {
           <Button onClick={() => this.props.addComment(newComment, authorId, cardId)} variant="contained" disabled={!newComment}>Add</Button>
           <Button onClick={() => this.setState({ newComment: "" })} variant="contained" disabled={!newComment}>Reset</Button>
         </ButtonGroup>
-        {comments.items.map(comment => comment.cardId == cardId && <CommentCard key={comment.id} comment={comment} />)}
+        {comments.items.map(comment => comment.cardId === cardId && <CommentCard key={comment.id} comment={comment} />)}
       </div >
     )
   }

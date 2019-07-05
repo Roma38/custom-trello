@@ -1,56 +1,59 @@
 import React from 'react';
-import { Link } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
-import Badge from '@material-ui/core/Badge';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Avatar from '@material-ui/core/Avatar';
 import { connect } from "react-redux";
 
-import { logOut } from '../redux/actions/auth'
+import { deleteNotification } from '../redux/actions/notifications'
 
-
-
-const useStyles = makeStyles(theme => ({
-  button: {
-    margin: theme.spacing(1),
+const useStyles = makeStyles(() => ({
+  list: {
+    maxWidth: 600,
+    margin: '0 auto'
   },
-  header: {
-    display: "flex",
-    justifyContent: "space-between"
-  }
 }));
 
-function Header(props) {
+  
+
+function Notifications(props) {
   const classes = useStyles();
-  const notifications = props.notifications.requestState === 'succeed' && props.auth.authState === 'loggedIn' ? props.notifications.items.filter(note => note.recipients && note.recipients.includes(props.auth.id.toString())) : [];
+  const notifications = props.notifications.items.filter(note => note.recipients.includes(props.auth.id));
+
   return (
-    <header className={classes.header}>
-      <h1>Custom Trello</h1>
-      {props.auth.authState === "unauthorized" && <div>
-        <Button component={Link} to="/register" variant="contained" className={classes.button}>Register</Button>
-        <Button component={Link} to="/login" variant="contained" className={classes.button}>Login</Button>
-      </div>}
-      {props.auth.authState === "loggedIn" && <div>
-        <Link to={'/notifications'} target="_blank">
-          <IconButton aria-label="notifications" color="inherit">
-            <Badge badgeContent={notifications.length} color="secondary">
-              <Icon color="error" style={{ fontSize: 30 }}>notifications</Icon>
-            </Badge>
+    <List dense className={classes.list}>
+      {notifications.map(note => <ListItem key={note.id}>
+        <ListItemAvatar>
+          <Avatar>
+            <Icon>drafts</Icon>
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText
+          primary={note.name}
+          secondary={note.text}
+        />
+        <ListItemSecondaryAction>
+          <IconButton edge="end" aria-label="Delete" onClick={() => props.deleteNotification(note.id)}>
+            <Icon >delete</Icon>
           </IconButton>
-        </Link>
-        <Button onClick={props.logOut} variant="contained" className={classes.button}>Logout</Button>
-      </div>}
-    </header>
+        </ListItemSecondaryAction>
+      </ListItem>
+      )}
+    </List>
   );
 }
 
 const mapStateToProps = ({ auth, notifications }) => ({ auth, notifications });
 
 const mapDispatchToProps = dispatch => ({
-  logOut: () => dispatch(logOut())
+  deleteNotification: id => dispatch(deleteNotification(id))
 });
 
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default connect(mapStateToProps, mapDispatchToProps)(Notifications);
